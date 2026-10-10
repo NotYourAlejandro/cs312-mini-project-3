@@ -1,5 +1,7 @@
+import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
+import { Client } from "pg";
 
 const app = express();
 const port = 7777;
@@ -32,6 +34,22 @@ let posts = [
     content: "Hello! This is my second post on this site!",
   },
 ];
+
+// database setup
+const PG_HOST     = "127.0.0.1";
+const PG_PORT     = 5432;
+const PG_DATABASE = process.env.PG_DATABASE;
+const PG_USER     = process.env.PG_USER;
+const PG_PASSWORD = process.env.PG_PASSWORD;
+
+const db = new Client({
+  host: PG_HOST,
+  port: PG_PORT,
+  database: PG_DATABASE,
+  user: PG_USER,
+  password: PG_PASSWORD,
+});
+await db.connect();
 
 // Homepage (posts display)
 app.get("/", (req, res) => {
@@ -105,3 +123,5 @@ app.post("/submit-post", (req, res) => {
 });
 
 app.listen(port, () => console.log(`Open in browser: http://localhost:7777`));
+
+db.close();
