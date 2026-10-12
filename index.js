@@ -18,22 +18,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   content: string
 // }
 
-let posts = [
-  {
-    id: 1,
-    date: new Date(),
-    author: "root",
-    title: "My First Post",
-    content: "Hello! This is my first post on this site!",
-  },
-  {
-    id: 2,
-    date: new Date(),
-    author: "root",
-    title: "My Second Post",
-    content: "Hello! This is my second post on this site!",
-  },
-];
+// let posts = [
+//   {
+//     id: 1,
+//     date: new Date(),
+//     author: "root",
+//     title: "My First Post",
+//     content: "Hello! This is my first post on this site!",
+//   },
+//   {
+//     id: 2,
+//     date: new Date(),
+//     author: "root",
+//     title: "My Second Post",
+//     content: "Hello! This is my second post on this site!",
+//   },
+// ];
 
 // database setup
 const PG_HOST     = "127.0.0.1";
@@ -52,8 +52,15 @@ const db = new Client({
 await db.connect();
 
 // Homepage (posts display)
-app.get("/", (req, res) => {
-  res.render("index.ejs", { posts: posts });
+app.get("/", async (req, res) => {
+  const postsResult = await db.query(
+    `SELECT blogs.blog_id, users.name, blogs.date_created, blogs.title, blogs.body
+     FROM blogs
+     INNER JOIN users
+     ON users.uid = blogs.author_uid
+     ORDER BY blogs.date_created DESC;`
+  );
+  res.render("index.ejs", { posts: postsResult.rows });
 });
 
 app.get("/edit/:id", (req, res) => {
@@ -122,6 +129,18 @@ app.post("/submit-post", (req, res) => {
   res.redirect("/");
 });
 
-app.listen(port, () => console.log(`Open in browser: http://localhost:7777`));
+app.get("/login", (req, res) => {
+  // if no username was provided, show the login page
+  if (!req.body.username) {
+    // render login page
+    res.render("login.ejs");
+  }
 
-db.close();
+  // otherwise, consider this a login attempt
+});
+
+app.get("/logout", (req, res) => {
+  // invalidate cookie or header or something
+});
+
+app.listen(port, () => console.log(`Open in browser: http://localhost:${port}`));
