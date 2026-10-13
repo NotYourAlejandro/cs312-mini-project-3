@@ -2,17 +2,17 @@ drop table blogs;
 drop table users;
 
 create table users (
-    uid serial not null,
+    uid serial primary key,
     password varchar(255) not null,
-    name varchar(255) not null
+    name varchar(255) not null unique
 );
 
 insert into users (name, password) 
-    values ('Geralt',    'password123'),
-           ('Yennefer',  'password123'),
-           ('Ciri',      'password123'),
-           ('Dandelion', 'password123'),
-           ('Roach',     'password123');
+    values ('Geralt',    '$2b$10$DRiDnFr7FsTENmJqadWnZO6kYdmqeR4fgQDzjsEkztDNXh.gaiXn.'),
+           ('Yennefer',  '$2b$10$L5u7g354Xqu8ZMxAnt.hR.FUEfN9fR59uYMEWliCZ0NkbhIA5uR8K'),
+           ('Ciri',      '$2b$10$9KBqPLMVmXqQ4OScVJhEmO9rYY9VEvj1CjknvwNhVikE76YMqzwzS'),
+           ('Dandelion', '$2b$10$mQgn4zTaTQaGspXMtnzJcuC8XobuA0Kx45sSccfMbU/7hemdEBr0m'),
+           ('Roach',     '$2b$10$rxYRHaigq1DOX43hjNYpqenVUF2HOF6jMp2AhQ8nX/EU0ebiQyX/a');
 
 create table blogs (
     blog_id serial not null,

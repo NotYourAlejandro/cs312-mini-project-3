@@ -13,16 +13,7 @@
         <div class="container mt-5">
             <h1>Editing <%= post.title %></h1>
             <form action="/submit-post" method="post">
-                <div class="mb-3">
-                    <label class="form-label" for="id">Post ID</label>
-                    <input class="form-control" type="text" name="id" id="id" value="<%= post.id %>" readonly>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="author">Author</label>
-                    <input class="form-control" type="text" name="author" id="author" value="<%= post.author %>">
-                </div>
-
+                <input type="hidden" name="id" value="<%= post.id %>">
                 <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
                     <input class="form-control" type="text" name="title" id="title" value="<%= post.title %>">
@@ -30,7 +21,7 @@
 
                 <div class="mb-3">
                     <label    class="form-label" for="content">Content</label>
-                    <textarea class="form-control" name="content" id="content" rows="10" cols="25"><%= post.content %></textarea>
+                    <textarea class="form-control" name="content" id="content" rows="10" cols="25" required><%= post.body %></textarea>
                 </div>
 
                 <button class="btn btn-primary" type="submit">Submit</button>
