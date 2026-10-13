@@ -197,6 +197,52 @@ app.get("/login", (req, res) => {
   res.render("login.ejs", { error: req.query.error === "1" });
 });
 
+app.get("/register", (req, res) => {
+  res.render("register.ejs", { error: "", username: "" });
+});
+
+app.post("/register", async (req, res, next) => {
+  const username = req.body.username?.trim();
+  const password = req.body.password;
+  const passwordConfirmation = req.body.passwordConfirmation;
+  let error = "";
+
+  // sanity checks
+  if (!username) {
+    res.status(400).render("register.ejs", { error: "Username is required.", username: username || "" });
+    return;
+  } else if (password !== passwordConfirmation) {
+    res.status(400).render("register.ejs", { error: "Passwords do not match.", username: username || "" });
+    return;
+  }
+
+  // check for preexisting user
+  const existingUser = await db.query("SELECT 1 FROM users WHERE name = $1", [username]);
+  if (existingUser.rowCount > 0) {
+    res.status(409).render("register.ejs", {
+      error: "That username is already registered.",
+      username,
+    });
+    return;
+  }
+
+  // store user in db
+  const passwordHash = await bcrypt.hash(password, 10);
+  const result = await db.query(
+    "INSERT INTO users (name, password) VALUES ($1, $2) RETURNING uid, name",
+    [username, passwordHash]
+  );
+  
+  // log user in as well
+  req.login(result.rows[0], (loginError) => {
+    if (loginError) {
+      return next(loginError);
+    }
+
+    res.redirect("/");
+  });
+});
+
 // perform login
 app.post("/login", passport.authenticate("local", {
   failureRedirect: "/login?error=1",
