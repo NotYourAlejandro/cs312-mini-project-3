@@ -47,6 +47,7 @@ const sessionSecret = "superSecretSecret";
 app.use(session({
   store: new PgSessionStore({ pool: sessionPool, createTableIfMissing: true }),
   secret: sessionSecret,
+  resave: false,
   saveUninitialized: false,
   cookie: { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" },
 }));
